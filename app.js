@@ -4,7 +4,7 @@ let lon;
 //let dateTime = "day";
 //let cond = "clear";
 
-const apiKey = "890c296cdc63122d337e770ba14c5c48";
+const apiKey = "";
 
 // DOM
 const city = document.querySelector(".curr-weather-city");
