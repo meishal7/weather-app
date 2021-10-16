@@ -4,7 +4,7 @@ let lon;
 //let dateTime = "day";
 //let cond = "clear";
 
-const apiKey = "";
+
 
 // DOM
 const city = document.querySelector(".curr-weather-city");
@@ -14,6 +14,8 @@ const hourWeatherList = document.querySelector(".hour-weather-list");
 const currWeatherDiv = document.querySelector(".current-weather");
 const currWeatherMin = document.querySelector(".curr-weather-min");
 const currWeatherMax = document.querySelector(".curr-weather-max");
+const searchBtn = document.querySelector("#search-btn");
+const footer = document.querySelector(".footer");
 
 const toggleLoadding = () =>
   document.querySelector(".spinner").classList.toggle("loading");
@@ -30,7 +32,7 @@ async function getWeather(lat, lon) {
     `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`
   );
   const data = await weatherRes.json();
-  console.log(data);
+  //console.log(data);
   return data;
 }
 
@@ -62,7 +64,7 @@ const displayWeather = async () => {
     weatherData.current.dt > weatherData.current.sunset
   ) {
     currentWeatherDayTime = "night";
-    console.log(weatherData.current.weather.main);
+    //console.log(weatherData.current.weather.main);
     currWeatherDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
   } else if (weatherData.current.dt < weatherData.current.sunrise) {
     currentWeatherDayTime = "night";
@@ -204,7 +206,6 @@ const displayWeather = async () => {
   //Sunset
   const sunsetTime = new Date(weatherData.current.sunset * 1000);
   let sunsetTimeArray = sunsetTime.toLocaleTimeString().split(":");
-  console.log(sunsetTimeArray);
   const sunset = document.querySelector(".sunset-value");
   sunset.innerText =
     sunsetTimeArray[0] +
@@ -241,9 +242,14 @@ const displayWeather = async () => {
     windDirection = "wnw";
   }
   const wind = document.querySelector(".wind-value");
-  wind.innerText = windDirection + " " + weatherData.current.wind_speed + " mph";
+  wind.innerText =
+    windDirection + " " + weatherData.current.wind_speed + " mph";
 
   toggleLoadding();
 };
 
 displayWeather();
+
+searchBtn.addEventListener("click", () =>
+  footer.classList.toggle("footer-open")
+);
