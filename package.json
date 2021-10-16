@@ -1,8 +1,7 @@
 {
   "name": "weather-app",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": ""
@@ -11,10 +10,22 @@
     "type": "git",
     "url": "git+https://github.com/meishal7/weather-app.git"
   },
+  "browserslist": [
+    "last 3 and_chr versions",
+    "last 3 chrome versions",
+    "last 3 opera versions",
+    "last 3 ios_saf versions",
+    "last 3 safari versions"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/meishal7/weather-app/issues"
   },
-  "homepage": "https://github.com/meishal7/weather-app#readme"
+  "homepage": "https://github.com/meishal7/weather-app#readme",
+  "devDependencies": {
+    "parcel": "^2.0.0"
+  },
+  "keywords": [],
+  "description": ""
 }

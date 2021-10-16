@@ -3,8 +3,11 @@ let lat;
 let lon;
 //let dateTime = "day";
 //let cond = "clear";
-
-
+function boo() {
+  console.log("boo");
+}
+const apiKey = process.env.KEY;
+console.log(apiKey);
 
 // DOM
 const city = document.querySelector(".curr-weather-city");
@@ -36,11 +39,27 @@ async function getWeather(lat, lon) {
   return data;
 }
 
-const displayWeather = async () => {
+const displayWeather = async (lat, lon) => {
   toggleLoadding();
+  let latitude;
+  let longtitude;
+  let currCity;
+  if (!lat && !lon) {
+    const [lat, lon, currCitym] = await getCrd();
+    latitude = lat;
+    longtitude = lon;
+    currCity = currCitym;
+  } else {
+    const currCitym = await getCrd();
+    currCity = currCitym[3];
+    latitude = lat;
+    longtitude = lon;
+    console.log("boo");
+    console.log(currCity);
+  }
 
-  const [lat, lon, currCity] = await getCrd();
-  const weatherData = await getWeather(lat, lon);
+  const weatherData = await getWeather(latitude, longtitude);
+  console.log(weatherData);
   const { hourly, daily } = weatherData;
 
   // Display current weather
@@ -253,3 +272,7 @@ displayWeather();
 searchBtn.addEventListener("click", () =>
   footer.classList.toggle("footer-open")
 );
+
+export default function test() {
+  return "test";
+}
