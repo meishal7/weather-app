@@ -1,75 +1,32 @@
-// Vars
-let lat;
-let lon;
-//let dateTime = "day";
-//let cond = "clear";
-function boo() {
-  console.log("boo");
-}
-const apiKey = process.env.KEY;
-console.log(apiKey);
+import localStor from "./localStor";
+import { locations } from "./localStor";
 
-// DOM
 const city = document.querySelector(".curr-weather-city");
 const currTemp = document.querySelector(".curr-weather-temp");
 const currCond = document.querySelector(".curr-weather-condition");
-const hourWeatherList = document.querySelector(".hour-weather-list");
 const currWeatherDiv = document.querySelector(".current-weather");
 const currWeatherMin = document.querySelector(".curr-weather-min");
 const currWeatherMax = document.querySelector(".curr-weather-max");
-const searchBtn = document.querySelector("#search-btn");
+const hourWeatherList = document.querySelector(".hour-weather-list");
+const weekWeatherList = document.querySelector(".week-weather-list");
 const footer = document.querySelector(".footer");
 
-const toggleLoadding = () =>
-  document.querySelector(".spinner").classList.toggle("loading");
+//export let locations = { cities: [] };
 
-// Get lattitide and longtitude
-async function getCrd() {
-  const response = await fetch("https://ipinfo.io/json?token=3631683ef9a03a");
-  const json = await response.json();
-  return [...json.loc.split(","), json.city];
-}
-
-async function getWeather(lat, lon) {
-  const weatherRes = await fetch(
-    `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`
-  );
-  const data = await weatherRes.json();
-  //console.log(data);
-  return data;
-}
-
-const displayWeather = async (lat, lon) => {
-  toggleLoadding();
-  let latitude;
-  let longtitude;
-  let currCity;
-  if (!lat && !lon) {
-    const [lat, lon, currCitym] = await getCrd();
-    latitude = lat;
-    longtitude = lon;
-    currCity = currCitym;
-  } else {
-    const currCitym = await getCrd();
-    currCity = currCitym[3];
-    latitude = lat;
-    longtitude = lon;
-    console.log("boo");
-    console.log(currCity);
-  }
-
-  const weatherData = await getWeather(latitude, longtitude);
-  console.log(weatherData);
-  const { hourly, daily } = weatherData;
-
-  // Display current weather
+export default function displayWeather(
+  weatherData,
+  currCity,
+  hourlyWeather,
+  dailyWeather
+) {
+  // Current weather
   city.textContent = currCity;
   currTemp.textContent = Math.floor(weatherData.current.temp) + "\u00B0F";
   currCond.textContent = weatherData.current.weather[0].main;
   currWeatherMin.textContent =
-    /**"\u2193" +*/ Math.floor(weatherData.daily[0].temp.min) + "\u00B0F";
+    Math.floor(weatherData.daily[0].temp.min) + "\u00B0F";
   currWeatherMax.textContent =
-    /**"\u2191" +*/ Math.floor(weatherData.daily[0].temp.max) + "\u00B0F";
+    Math.floor(weatherData.daily[0].temp.max) + "\u00B0F";
   // Determine if it's day or night and display background
   let currentWeatherDayTime = "";
   if (
@@ -83,17 +40,15 @@ const displayWeather = async (lat, lon) => {
     weatherData.current.dt > weatherData.current.sunset
   ) {
     currentWeatherDayTime = "night";
-    //console.log(weatherData.current.weather.main);
     currWeatherDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
   } else if (weatherData.current.dt < weatherData.current.sunrise) {
     currentWeatherDayTime = "night";
     currWeatherDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
   }
 
-  // Display hourly weather
-  hourly.forEach((hour) => {
+  // Hourly weather
+  hourlyWeather.forEach((hour) => {
     const date = new Date(hour.dt * 1000);
-
     const hourLi = document.createElement("li");
     const time = document.createElement("p");
     const temp = document.createElement("p");
@@ -142,8 +97,8 @@ const displayWeather = async (lat, lon) => {
     hourWeatherList.appendChild(hourLi);
   });
 
-  // Display weekly weather
-  daily.forEach((day) => {
+  // Week weather
+  dailyWeather.forEach((day) => {
     const weekLi = document.createElement("li");
     const weekDayName = document.createElement("p");
     const weekImgCondDiv = document.createElement("div");
@@ -206,11 +161,10 @@ const displayWeather = async (lat, lon) => {
       weekHumidityDiv
     );
 
-    const weekWeatherList = document.querySelector(".week-weather-list");
     weekWeatherList.appendChild(weekLi);
   });
 
-  // Display current weather details
+  // Current weather details
   // Sunrise
   const sunriseTime = new Date(weatherData.current.sunrise * 1000);
   let sunriseTimeArray = sunriseTime.toLocaleTimeString().split(":");
@@ -264,15 +218,30 @@ const displayWeather = async (lat, lon) => {
   wind.innerText =
     windDirection + " " + weatherData.current.wind_speed + " mph";
 
-  toggleLoadding();
-};
+  // Display saved locations
+  const savedLocDiv = document.createElement("div");
+  const savedLocInnerDiv = document.createElement("div");
+  savedLocDiv.className = "saved-loc";
+  const savedLocName = document.createElement("p");
+  savedLocName.classList = "saved-loc-name";
+  const savedLocTemp = document.createElement("p");
+  savedLocTemp.classList = "saved-loc-temp";
+  const savedLocTime = document.createElement("p");
+  savedLocTime.className = "saved-loc-time";
+  savedLocInnerDiv.append(savedLocName, savedLocTemp);
+  savedLocDiv.append(savedLocTime, savedLocInnerDiv);
+  footer.appendChild(savedLocDiv);
+  savedLocName.textContent = currCity;
+  savedLocTemp.textContent = Math.floor(weatherData.current.temp) + "\u00B0F";
+  savedLocDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
 
-displayWeather();
-
-searchBtn.addEventListener("click", () =>
-  footer.classList.toggle("footer-open")
-);
-
-export default function test() {
-  return "test";
+  let savedLocTimeConv = new Date(weatherData.current.dt * 1000);
+  let savedLocTimeArray = savedLocTimeConv.toLocaleTimeString().split(":");
+  savedLocTime.innerText =
+    savedLocTimeArray[0] +
+    "." +
+    savedLocTimeArray[1] +
+    savedLocTimeArray[2].charAt(3) +
+    savedLocTimeArray[2].charAt(4);
+  localStor(locations, currCity);
 }
