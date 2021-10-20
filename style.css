@@ -263,35 +263,37 @@ body {
   display: block;
 }
 .pac-container {
-  background-color: transparent;
-  /* border: 1px white solid; */
+  background: transparent;
 }
+.pac-container:hover {
+  background-color: transparent;
+}
+
 .pac-item-query {
   color: #fffafa;
 }
-.pac-item-query:hover,
-.pac-item-query:focus {
+.pac-item-query:hover {
   color: black;
-  background: transparent;
+}
+.pac-item-query-selected {
+  color: black;
 }
 
 .pac-target-input {
   animation-name: endBrowserAutofill;
   border: white 1 px solid;
   border-radius: 4px;
-
   background: transparent;
-
   color: #fffafa;
   font-family: "Rubik", sans-serif;
   width: 150px;
   margin-left: 20px;
   margin-bottom: 2rem;
   border: white 1px solid;
-  border: 1px white solid;
   border-radius: 4px;
   padding: 0.5rem;
 }
+
 .search-span {
   color: #fffafa;
   margin-left: 20px;
@@ -299,26 +301,12 @@ body {
   margin-bottom: 5px;
   display: block;
 }
-.pac-logo {
-  color: aqua;
+
+.saved-loc-card {
+  margin: 10px 30px;
+  padding: 15px;
+  border-radius: 10px;
 }
-.saved-loc {
-  width: 100%;
-  height: 80px;
-}
-.saved-loc p {
-  font-family: Rubik;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 16px;
-  color: #ffffff;
-}
-.saved-loc div {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem 1rem;
-}
-.saved-loc div p {
-  margin: 0 0;
-  font-size: 20px;
+input:focus {
+  outline: none;
 }

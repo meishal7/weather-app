@@ -1,5 +1,4 @@
 import localStor from "./localStor";
-import { locations } from "./localStor";
 
 const city = document.querySelector(".curr-weather-city");
 const currTemp = document.querySelector(".curr-weather-temp");
@@ -11,7 +10,6 @@ const hourWeatherList = document.querySelector(".hour-weather-list");
 const weekWeatherList = document.querySelector(".week-weather-list");
 const footer = document.querySelector(".footer");
 
-//export let locations = { cities: [] };
 
 export default function displayWeather(
   weatherData,
@@ -218,30 +216,35 @@ export default function displayWeather(
   wind.innerText =
     windDirection + " " + weatherData.current.wind_speed + " mph";
 
-  // Display saved locations
-  const savedLocDiv = document.createElement("div");
-  const savedLocInnerDiv = document.createElement("div");
-  savedLocDiv.className = "saved-loc";
-  const savedLocName = document.createElement("p");
-  savedLocName.classList = "saved-loc-name";
-  const savedLocTemp = document.createElement("p");
-  savedLocTemp.classList = "saved-loc-temp";
-  const savedLocTime = document.createElement("p");
-  savedLocTime.className = "saved-loc-time";
-  savedLocInnerDiv.append(savedLocName, savedLocTemp);
-  savedLocDiv.append(savedLocTime, savedLocInnerDiv);
-  footer.appendChild(savedLocDiv);
-  savedLocName.textContent = currCity;
-  savedLocTemp.textContent = Math.floor(weatherData.current.temp) + "\u00B0F";
-  savedLocDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
+  localStor(weatherData, currCity);
 
-  let savedLocTimeConv = new Date(weatherData.current.dt * 1000);
-  let savedLocTimeArray = savedLocTimeConv.toLocaleTimeString().split(":");
-  savedLocTime.innerText =
-    savedLocTimeArray[0] +
-    "." +
-    savedLocTimeArray[1] +
-    savedLocTimeArray[2].charAt(3) +
-    savedLocTimeArray[2].charAt(4);
-  localStor(locations, currCity);
+  // Display saved locations
+  // const locData = JSON.parse(localStorage.getItem("locations"));
+
+  // locData.cities.forEach((el) => {
+  //   const savedLocCard = document.createElement("div");
+  //   savedLocCard.className = "saved-loc-card";
+  //   const savedLocInnerDiv = document.createElement("div");
+  //   const savedLocName = document.createElement("p");
+  //   savedLocName.classList = "saved-loc-name";
+  //   const savedLocTemp = document.createElement("p");
+  //   savedLocTemp.classList = "saved-loc-temp";
+  //   const savedLocTime = document.createElement("p");
+  //   savedLocTime.className = "saved-loc-time";
+  //   savedLocInnerDiv.append(savedLocName, savedLocTemp);
+  //   savedLocCard.append(savedLocTime, savedLocInnerDiv);
+  //   savedLocations.appendChild(savedLocCard);
+  //   savedLocName.textContent = currCity;
+  //   savedLocTemp.textContent = Math.floor(weatherData.current.temp) + "\u00B0F";
+  //   savedLocCard.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
+
+  //   let savedLocTimeConv = new Date(weatherData.current.dt * 1000);
+  //   let savedLocTimeArray = savedLocTimeConv.toLocaleTimeString().split(":");
+  //   savedLocTime.innerText =
+  //     savedLocTimeArray[0] +
+  //     "." +
+  //     savedLocTimeArray[1] +
+  //     savedLocTimeArray[2].charAt(3) +
+  //     savedLocTimeArray[2].charAt(4);
+  // });
 }

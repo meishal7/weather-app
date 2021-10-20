@@ -1,4 +1,4 @@
-//const apiKey = process.env.KEY;
+const apiKey = process.env.KEY;
 
 export default async function getWeather(lattitude, longtitude) {
   const weatherRes = await fetch(
