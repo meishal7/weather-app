@@ -251,7 +251,7 @@ body {
 .footer-open {
   border-top-left-radius: 50% 10%;
   border-top-right-radius: 50% 10%;
-  height: 500px;
+  height: 600px;
 }
 .footer img:last-of-type {
   display: none;
@@ -287,7 +287,7 @@ body {
   color: #fffafa;
   font-family: "Rubik", sans-serif;
   width: 150px;
-  margin-left: 20px;
+  margin-left: 30px;
   margin-bottom: 2rem;
   border: white 1px solid;
   border-radius: 4px;
@@ -296,16 +296,37 @@ body {
 
 .search-span {
   color: #fffafa;
-  margin-left: 20px;
+  margin-left: 30px;
   margin-top: 30px;
   margin-bottom: 5px;
   display: block;
 }
-
+.saved-locations {
+  overflow: scroll;
+}
 .saved-loc-card {
   margin: 10px 30px;
   padding: 15px;
   border-radius: 10px;
+  font-family: Rubik;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 19px;
+  color: #fffafa;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+}
+.saved-loc-card div {
+  display: flex;
+  justify-content: space-between;
+}
+.saved-loc-card div p {
+  margin: 0 0;
+  padding-top: 0.5rem;
+  font-size: 25px;
+}
+.saved-loc-time {
+  margin: 0 0;
 }
 input:focus {
   outline: none;

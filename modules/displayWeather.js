@@ -49,6 +49,7 @@ export default function displayWeather(
     const hourLi = document.createElement("li");
     const time = document.createElement("p");
     const temp = document.createElement("p");
+    temp.classList = "hour-temp";
     const hourImg = document.createElement("img");
     // Convert EPOCH seconds to local time and split resullting string into array
     // for using only needed parts of that string in html element

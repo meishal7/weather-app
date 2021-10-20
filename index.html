@@ -110,20 +110,41 @@
             alt="close"
           />
         </button>
+        <div class="search-and-temp-switch">
+          <label for="search">
+            <span class="search-span">Search</span>
+            <input
+              id="search-input"
+              type="text"
+              placeholder="Type city"
+              name="search"
+            />
+          </label>
+          <div class="temp-buttons-div">
+            <button
+              id="celcius-btn"
+              class="temp-btn"
+              type="button"
+              title="celcius"
+              aria-label="celcius"
+            >
+              C
+            </button>
+            <button
+              id="fahr-btn"
+              class="temp-btn"
+              type="button"
+              title="fahrenheit"
+              aria-label="celcius"
+            >
+              F
+            </button>
+          </div>
+        </div>
 
-        <label for="search">
-          <span class="search-span">Search</span>
-          <input
-            id="search-input"
-            type="text"
-            placeholder="Type city"
-            name="search"
-          />
-        </label>
         <div class="saved-locations"></div>
       </div>
     </div>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvZL1iXVXYPPxSOg0bu8Dkwa7IUSdvk14&libraries=places&callback=initMap"></script>
 
     <script src="index.js"></script>
   </body>

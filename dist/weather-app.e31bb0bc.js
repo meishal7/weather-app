@@ -1132,6 +1132,7 @@ function displayWeather(weatherData, currCity, hourlyWeather, dailyWeather) {
     var hourLi = document.createElement("li");
     var time = document.createElement("p");
     var temp = document.createElement("p");
+    temp.classList = "hour-temp";
     var hourImg = document.createElement("img"); // Convert EPOCH seconds to local time and split resullting string into array
     // for using only needed parts of that string in html element
 
@@ -1347,7 +1348,88 @@ function initMap(input) {
     }
   });
 }
-},{"./getWeather":"modules/getWeather.js","./displayWeather":"modules/displayWeather.js"}],"index.js":[function(require,module,exports) {
+},{"./getWeather":"modules/getWeather.js","./displayWeather":"modules/displayWeather.js"}],"modules/reloadSavedLocations.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = reloadSavedLocations;
+
+var _getWeather = _interopRequireDefault(require("./getWeather"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+var apiKey = "74a29df014963a5cf46387efc2a24cc3";
+
+function reloadSavedLocations() {
+  var data = JSON.parse(localStorage.getItem("locations"));
+  if (!data) return;
+  data.cities.forEach( /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(el) {
+      var weatherData, savedLocTimeConv, savedLocTimeArray, savedLocTime, dayTime;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return (0, _getWeather.default)(el.lattitude, el.longtitude);
+
+            case 2:
+              weatherData = _context.sent;
+              // Convert EPOC time to normal time
+              savedLocTimeConv = new Date(weatherData.current.dt * 1000);
+              savedLocTimeArray = savedLocTimeConv.toLocaleTimeString().split(":");
+              savedLocTime = savedLocTimeArray[0] + "." + savedLocTimeArray[1] + savedLocTimeArray[2].charAt(3) + savedLocTimeArray[2].charAt(4); // Determine if it's day or night for choosing background image
+
+              dayTime = "";
+
+              if (weatherData.current.dt > weatherData.current.sunrise && weatherData.current.dt < weatherData.current.sunset) {
+                dayTime = "day";
+              } else if (weatherData.current.dt > weatherData.current.sunrise && weatherData.current.dt > weatherData.current.sunset) {
+                dayTime = "night";
+              } else if (weatherData.current.dt < weatherData.current.sunrise) {
+                dayTime = "night";
+              }
+
+              el.temp = Math.floor(weatherData.current.temp), el.time = savedLocTime, el.condition = weatherData.current.weather[0].main, el.dayTime = dayTime;
+
+            case 9:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+
+    return function (_x) {
+      return _ref.apply(this, arguments);
+    };
+  }());
+  localStorage.setItem("locations", JSON.stringify(data));
+}
+},{"./getWeather":"modules/getWeather.js"}],"modules/switchCelcius.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = switchCelcius;
+var currTemp = document.querySelector(".curr-weather-temp");
+var currWeatherMin = document.querySelector(".curr-weather-min");
+var currWeatherMax = document.querySelector(".curr-weather-max");
+var hourTemp = document.querySelector("hour-temp");
+
+function switchCelcius() {
+  console.log("this node value is ", currTemp.textContent);
+  console.log("this node value is ", currWeatherMin.textContent);
+  console.log("this node value is ", hourTemp.textContent);
+}
+},{}],"index.js":[function(require,module,exports) {
 "use strict";
 
 require("regenerator-runtime/runtime");
@@ -1360,7 +1442,11 @@ var _displayWeather = _interopRequireDefault(require("./modules/displayWeather")
 
 var _googlePlaces = _interopRequireDefault(require("./modules/googlePlaces"));
 
+var _reloadSavedLocations = _interopRequireDefault(require("./modules/reloadSavedLocations"));
+
 var _displaySavedLocations = _interopRequireDefault(require("./modules/displaySavedLocations"));
+
+var _switchCelcius = _interopRequireDefault(require("./modules/switchCelcius"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1375,12 +1461,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 var searchBtn = document.querySelector("#search-btn");
 var footer = document.querySelector(".footer");
 var input = document.querySelector("#search-input");
+var savedLoc = document.querySelector(".saved-locations");
+var celcBtn = document.querySelector("#celcius-btn");
+var fahrBtn = document.querySelector("#fahr-btn");
 
 var toggleLoadding = function toggleLoadding() {
   return document.querySelector(".spinner").classList.toggle("loading");
 };
 
 (0, _googlePlaces.default)(input);
+(0, _reloadSavedLocations.default)();
 
 var weather = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -1423,8 +1513,19 @@ searchBtn.addEventListener("click", function () {
   footer.classList.toggle("footer-open");
   input.value = "";
 });
+celcBtn.addEventListener("click", function () {
+  console.log("celc clicked");
+  (0, _switchCelcius.default)();
+});
+fahrBtn.addEventListener("click", function () {
+  console.log("fahr clicked");
+}); // console.log("here is ", savedLoc);
+// savedLoc.addEventListener("click", (event) => {
+//   console.log("i am clicked", event.target);
+// });
+
 weather();
-},{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","./modules/getLatLong":"modules/getLatLong.js","./modules/getWeather":"modules/getWeather.js","./modules/displayWeather":"modules/displayWeather.js","./modules/googlePlaces":"modules/googlePlaces.js","./modules/displaySavedLocations":"modules/displaySavedLocations.js"}],"../../../../../../opt/homebrew/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","./modules/getLatLong":"modules/getLatLong.js","./modules/getWeather":"modules/getWeather.js","./modules/displayWeather":"modules/displayWeather.js","./modules/googlePlaces":"modules/googlePlaces.js","./modules/reloadSavedLocations":"modules/reloadSavedLocations.js","./modules/displaySavedLocations":"modules/displaySavedLocations.js","./modules/switchCelcius":"modules/switchCelcius.js"}],"../../../../../../opt/homebrew/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1452,7 +1553,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65535" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53599" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
