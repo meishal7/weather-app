@@ -981,50 +981,109 @@ function _getWeather() {
   }));
   return _getWeather.apply(this, arguments);
 }
-},{}],"modules/localStor.js":[function(require,module,exports) {
+},{}],"modules/displaySavedLocations.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = localStor;
+exports.default = displaySavedLocations;
+var savedLocations = document.querySelector(".saved-locations");
 
-function localStor(weatherData, city) {
+function displaySavedLocations() {
+  while (savedLocations.firstChild && savedLocations.lastChild) {
+    savedLocations.removeChild(savedLocations.firstChild);
+  }
+
   var data = JSON.parse(localStorage.getItem("locations"));
+  if (!data) return;
+  console.log("there is data");
+  data.cities.forEach(function (el) {
+    var savedLocCard = document.createElement("div");
+    savedLocCard.className = "saved-loc-card";
+    var savedLocInnerDiv = document.createElement("div");
+    var savedLocName = document.createElement("p");
+    savedLocName.classList = "saved-loc-name";
+    var savedLocTemp = document.createElement("p");
+    savedLocTemp.classList = "saved-loc-temp";
+    var savedLocTime = document.createElement("p");
+    savedLocTime.className = "saved-loc-time";
+    savedLocInnerDiv.append(savedLocName, savedLocTemp);
+    savedLocCard.append(savedLocTime, savedLocInnerDiv);
+    savedLocations.appendChild(savedLocCard);
+    savedLocName.textContent = el.name;
+    savedLocTemp.textContent = el.temp + "\xB0F";
+    savedLocCard.style.backgroundImage = "url('/images/backgrounds/".concat(el.dayTime, "-").concat(el.condition, ".png')");
+    savedLocTime.innerText = el.time;
+  });
+}
+},{}],"modules/storeLocations.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = storeLocations;
+
+var _displaySavedLocations = _interopRequireDefault(require("./displaySavedLocations"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function storeLocations(weatherData, city) {
+  var data = JSON.parse(localStorage.getItem("locations")); // Convert time from EPOC to normal time
+
   var savedLocTimeConv = new Date(weatherData.current.dt * 1000);
   var savedLocTimeArray = savedLocTimeConv.toLocaleTimeString().split(":");
-  var savedLocTime = savedLocTimeArray[0] + "." + savedLocTimeArray[1] + savedLocTimeArray[2].charAt(3) + savedLocTimeArray[2].charAt(4);
-  console.log(data);
+  var savedLocTime = savedLocTimeArray[0] + "." + savedLocTimeArray[1] + savedLocTimeArray[2].charAt(3) + savedLocTimeArray[2].charAt(4); // Determine if it's day or night
+
+  var dayTime = "";
+
+  if (weatherData.current.dt > weatherData.current.sunrise && weatherData.current.dt < weatherData.current.sunset) {
+    dayTime = "day";
+  } else if (weatherData.current.dt > weatherData.current.sunrise && weatherData.current.dt > weatherData.current.sunset) {
+    dayTime = "night";
+  } else if (weatherData.current.dt < weatherData.current.sunrise) {
+    dayTime = "night";
+  }
 
   if (!data) {
-    var _obj = {
+    var obj = {
       name: city,
       temp: Math.floor(weatherData.current.temp),
       time: savedLocTime,
       lattitude: weatherData.lat,
-      longtitude: weatherData.lon
+      longtitude: weatherData.lon,
+      condition: weatherData.current.weather[0].main,
+      dayTime: dayTime
     };
     var locations = {
       cities: []
     };
-    locations.cities.push(_obj);
+    locations.cities.push(obj);
     localStorage.setItem("locations", JSON.stringify(locations));
+    (0, _displaySavedLocations.default)();
     return;
   } else if (data.cities.some(function (el) {
     return el.name === city;
-  })) return;
-
-  var obj = {
-    name: city,
-    temp: Math.floor(weatherData.current.temp),
-    time: savedLocTime,
-    lattitude: weatherData.lat,
-    longtitude: weatherData.lon
-  };
-  data.cities.push(obj);
-  localStorage.setItem("locations", JSON.stringify(data));
+  })) {
+    (0, _displaySavedLocations.default)();
+    return;
+  } else {
+    var obj1 = {
+      name: city,
+      temp: Math.floor(weatherData.current.temp),
+      time: savedLocTime,
+      lattitude: weatherData.lat,
+      longtitude: weatherData.lon,
+      condition: weatherData.current.weather[0].main,
+      dayTime: dayTime
+    };
+    data.cities.push(obj1);
+    localStorage.setItem("locations", JSON.stringify(data));
+    (0, _displaySavedLocations.default)();
+  }
 }
-},{}],"modules/displayWeather.js":[function(require,module,exports) {
+},{"./displaySavedLocations":"modules/displaySavedLocations.js"}],"modules/displayWeather.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1032,7 +1091,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = displayWeather;
 
-var _localStor = _interopRequireDefault(require("./localStor"));
+var _storeLocations = _interopRequireDefault(require("./storeLocations"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1202,54 +1261,9 @@ function displayWeather(weatherData, currCity, hourlyWeather, dailyWeather) {
 
   var wind = document.querySelector(".wind-value");
   wind.innerText = windDirection + " " + weatherData.current.wind_speed + " mph";
-  (0, _localStor.default)(weatherData, currCity); // Display saved locations
-  // const locData = JSON.parse(localStorage.getItem("locations"));
-  // locData.cities.forEach((el) => {
-  //   const savedLocCard = document.createElement("div");
-  //   savedLocCard.className = "saved-loc-card";
-  //   const savedLocInnerDiv = document.createElement("div");
-  //   const savedLocName = document.createElement("p");
-  //   savedLocName.classList = "saved-loc-name";
-  //   const savedLocTemp = document.createElement("p");
-  //   savedLocTemp.classList = "saved-loc-temp";
-  //   const savedLocTime = document.createElement("p");
-  //   savedLocTime.className = "saved-loc-time";
-  //   savedLocInnerDiv.append(savedLocName, savedLocTemp);
-  //   savedLocCard.append(savedLocTime, savedLocInnerDiv);
-  //   savedLocations.appendChild(savedLocCard);
-  //   savedLocName.textContent = currCity;
-  //   savedLocTemp.textContent = Math.floor(weatherData.current.temp) + "\u00B0F";
-  //   savedLocCard.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
-  //   let savedLocTimeConv = new Date(weatherData.current.dt * 1000);
-  //   let savedLocTimeArray = savedLocTimeConv.toLocaleTimeString().split(":");
-  //   savedLocTime.innerText =
-  //     savedLocTimeArray[0] +
-  //     "." +
-  //     savedLocTimeArray[1] +
-  //     savedLocTimeArray[2].charAt(3) +
-  //     savedLocTimeArray[2].charAt(4);
-  // });
+  (0, _storeLocations.default)(weatherData, currCity);
 }
-},{"./localStor":"modules/localStor.js"}],"modules/removeNodes.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = removeNodes;
-var hourWeatherList = document.querySelector(".hour-weather-list");
-var weekWeatherList = document.querySelector(".week-weather-list");
-
-function removeNodes() {
-  while (hourWeatherList.firstChild && hourWeatherList.lastChild) {
-    hourWeatherList.removeChild(hourWeatherList.firstChild);
-  }
-
-  while (weekWeatherList.firstChild && weekWeatherList.lastChild) {
-    weekWeatherList.removeChild(weekWeatherList.firstChild);
-  }
-}
-},{}],"modules/googlePlaces.js":[function(require,module,exports) {
+},{"./storeLocations":"modules/storeLocations.js"}],"modules/googlePlaces.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1261,14 +1275,14 @@ var _getWeather = _interopRequireDefault(require("./getWeather"));
 
 var _displayWeather = _interopRequireDefault(require("./displayWeather"));
 
-var _removeNodes = _interopRequireDefault(require("./removeNodes"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+var hourWeatherList = document.querySelector(".hour-weather-list");
+var weekWeatherList = document.querySelector(".week-weather-list");
 var footer = document.querySelector(".footer");
 
 function initMap(input) {
@@ -1299,11 +1313,19 @@ function initMap(input) {
               case 2:
                 weatherData = _context.sent;
                 city = place.name;
-                hourly = weatherData.hourly, daily = weatherData.daily;
-                (0, _removeNodes.default)();
+                hourly = weatherData.hourly, daily = weatherData.daily; //removeNodes();
+
+                while (hourWeatherList.firstChild && hourWeatherList.lastChild) {
+                  hourWeatherList.removeChild(hourWeatherList.firstChild);
+                }
+
+                while (weekWeatherList.firstChild && weekWeatherList.lastChild) {
+                  weekWeatherList.removeChild(weekWeatherList.firstChild);
+                }
+
                 (0, _displayWeather.default)(weatherData, city, hourly, daily);
 
-              case 7:
+              case 8:
               case "end":
                 return _context.stop();
             }
@@ -1325,39 +1347,7 @@ function initMap(input) {
     }
   });
 }
-},{"./getWeather":"modules/getWeather.js","./displayWeather":"modules/displayWeather.js","./removeNodes":"modules/removeNodes.js"}],"modules/displaySavedLocations.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = displaySavedLocations;
-var savedLocations = document.querySelector(".saved-locations");
-
-function displaySavedLocations() {
-  var data = JSON.parse(localStorage.getItem("locations"));
-  if (!data) return;
-  console.log("there is data");
-  var city = localStorage.getItem();
-  data.cities.forEach(function (el) {
-    var savedLocCard = document.createElement("div");
-    savedLocCard.className = "saved-loc-card";
-    var savedLocInnerDiv = document.createElement("div");
-    var savedLocName = document.createElement("p");
-    savedLocName.classList = "saved-loc-name";
-    var savedLocTemp = document.createElement("p");
-    savedLocTemp.classList = "saved-loc-temp";
-    var savedLocTime = document.createElement("p");
-    savedLocTime.className = "saved-loc-time";
-    savedLocInnerDiv.append(savedLocName, savedLocTemp);
-    savedLocCard.append(savedLocTime, savedLocInnerDiv);
-    savedLocations.appendChild(savedLocCard);
-    savedLocName.textContent = el.name;
-    savedLocTemp.textContent = el.temp + "\xB0F";
-    savedLocCard.style.backgroundImage = "url('/images/backgrounds/".concat(currentWeatherDayTime, "-").concat(weatherData.current.weather[0].main, ".png')");
-  });
-}
-},{}],"index.js":[function(require,module,exports) {
+},{"./getWeather":"modules/getWeather.js","./displayWeather":"modules/displayWeather.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 require("regenerator-runtime/runtime");
@@ -1390,7 +1380,7 @@ var toggleLoadding = function toggleLoadding() {
   return document.querySelector(".spinner").classList.toggle("loading");
 };
 
-(0, _googlePlaces.default)(input); //displaySavedLocations();
+(0, _googlePlaces.default)(input);
 
 var weather = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -1462,7 +1452,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52673" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65535" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

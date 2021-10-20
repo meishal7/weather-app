@@ -1,6 +1,7 @@
 import getWeather from "./getWeather";
 import displayWeather from "./displayWeather";
-import removeNodes from "./removeNodes";
+const hourWeatherList = document.querySelector(".hour-weather-list");
+const weekWeatherList = document.querySelector(".week-weather-list");
 
 const footer = document.querySelector(".footer");
 export default function initMap(input) {
@@ -27,7 +28,13 @@ export default function initMap(input) {
       );
       let city = place.name;
       const { hourly, daily } = weatherData;
-      removeNodes();
+      //removeNodes();
+      while (hourWeatherList.firstChild && hourWeatherList.lastChild) {
+        hourWeatherList.removeChild(hourWeatherList.firstChild);
+      }
+      while (weekWeatherList.firstChild && weekWeatherList.lastChild) {
+        weekWeatherList.removeChild(weekWeatherList.firstChild);
+      }
       displayWeather(weatherData, city, hourly, daily);
     };
     weather();

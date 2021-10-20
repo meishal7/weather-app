@@ -13,7 +13,6 @@ const toggleLoadding = () =>
   document.querySelector(".spinner").classList.toggle("loading");
 
 initMap(input);
-//displaySavedLocations();
 
 const weather = async () => {
   toggleLoadding();
