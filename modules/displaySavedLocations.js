@@ -1,11 +1,17 @@
+// displaySavedLocations()
+// This function goes through saved locations in local storage and displays
+// city name, tempreture and time for every saved location in savedLocations div
+
+import displayWeatherFromSavedLoc from "./displayWeatherFromSavedLoc";
+
 const savedLocations = document.querySelector(".saved-locations");
+
 export default function displaySavedLocations() {
   while (savedLocations.firstChild && savedLocations.lastChild) {
     savedLocations.removeChild(savedLocations.firstChild);
   }
   const data = JSON.parse(localStorage.getItem("locations"));
   if (!data) return;
-  console.log("there is data");
 
   data.cities.forEach((el) => {
     const savedLocCard = document.createElement("div");
@@ -24,5 +30,7 @@ export default function displaySavedLocations() {
     savedLocTemp.textContent = el.temp + "\u00B0F";
     savedLocCard.style.backgroundImage = `url('/images/backgrounds/${el.dayTime}-${el.condition}.png')`;
     savedLocTime.innerText = el.time;
+
+    savedLocCard.addEventListener("click", displayWeatherFromSavedLoc);
   });
 }

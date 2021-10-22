@@ -1,4 +1,8 @@
-import storeLocations from "./storeLocations";
+// displayWeather()
+// This function displays current, hourly, weekly weather
+// and current weather details. Every time this function is called, it calls
+// storeLocations() which saves displayed location in a local storage
+import storeLocations from "./storeLocation";
 
 const city = document.querySelector(".curr-weather-city");
 const currTemp = document.querySelector(".curr-weather-temp");

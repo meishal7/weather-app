@@ -3,14 +3,14 @@ import getLatLong, { coordinates } from "./modules/getLatLong";
 import getWeather from "./modules/getWeather";
 import displayWeather from "./modules/displayWeather";
 import initMap from "./modules/googlePlaces";
-import reloadSavedLocations from "./modules/reloadSavedLocations";
+import refreshSavedLocations from "./modules/refreshSavedLocations";
 import displaySavedLocations from "./modules/displaySavedLocations";
 import switchCelcius from "./modules/switchCelcius";
 
 const searchBtn = document.querySelector("#search-btn");
 const footer = document.querySelector(".footer");
 const input = document.querySelector("#search-input");
-const savedLoc = document.querySelector(".saved-locations");
+
 const celcBtn = document.querySelector("#celcius-btn");
 const fahrBtn = document.querySelector("#fahr-btn");
 
@@ -18,7 +18,7 @@ const toggleLoadding = () =>
   document.querySelector(".spinner").classList.toggle("loading");
 
 initMap(input);
-reloadSavedLocations();
+refreshSavedLocations();
 const weather = async () => {
   toggleLoadding();
   await getLatLong();
@@ -44,8 +44,7 @@ fahrBtn.addEventListener("click", () => {
   console.log("fahr clicked");
 });
 
-// console.log("here is ", savedLoc);
 // savedLoc.addEventListener("click", (event) => {
-//   console.log("i am clicked", event.target);
+//   console.log("i am clicked");
 // });
 weather();

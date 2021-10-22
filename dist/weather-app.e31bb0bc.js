@@ -969,10 +969,9 @@ function _getWeather() {
 
           case 5:
             data = _context.sent;
-            console.log(data);
             return _context.abrupt("return", data);
 
-          case 8:
+          case 7:
           case "end":
             return _context.stop();
         }
@@ -981,13 +980,85 @@ function _getWeather() {
   }));
   return _getWeather.apply(this, arguments);
 }
-},{}],"modules/displaySavedLocations.js":[function(require,module,exports) {
+},{}],"modules/displayWeatherFromSavedLoc.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = displaySavedLocations;
+
+var _displayWeather = _interopRequireDefault(require("./displayWeather"));
+
+var _getWeather = _interopRequireDefault(require("./getWeather"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function displaySavedLocations(event) {
+  var data = JSON.parse(localStorage.getItem("locations"));
+  data.cities.forEach( /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(city) {
+      var weatherData, hourly, daily, hourWeatherList, weekWeatherList;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              if (!(city.name == event.target.childNodes[0].innerText)) {
+                _context.next = 10;
+                break;
+              }
+
+              _context.next = 3;
+              return (0, _getWeather.default)(city.lattitude, city.longtitude);
+
+            case 3:
+              weatherData = _context.sent;
+              hourly = weatherData.hourly, daily = weatherData.daily;
+              hourWeatherList = document.querySelector(".hour-weather-list");
+              weekWeatherList = document.querySelector(".week-weather-list"); // Remove childNodes from hourWeatherList and weekWeatherList
+
+              while (hourWeatherList.firstChild && hourWeatherList.lastChild) {
+                hourWeatherList.removeChild(hourWeatherList.firstChild);
+              }
+
+              while (weekWeatherList.firstChild && weekWeatherList.lastChild) {
+                weekWeatherList.removeChild(weekWeatherList.firstChild);
+              }
+
+              (0, _displayWeather.default)(weatherData, city.name, hourly, daily);
+
+            case 10:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+
+    return function (_x) {
+      return _ref.apply(this, arguments);
+    };
+  }());
+}
+},{"./displayWeather":"modules/displayWeather.js","./getWeather":"modules/getWeather.js"}],"modules/displaySavedLocations.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = displaySavedLocations;
+
+var _displayWeatherFromSavedLoc = _interopRequireDefault(require("./displayWeatherFromSavedLoc"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// displaySavedLocations()
+// This function goes through saved locations in local storage and displays
+// city name, tempreture and time for every saved location in savedLocations div
 var savedLocations = document.querySelector(".saved-locations");
 
 function displaySavedLocations() {
@@ -997,7 +1068,6 @@ function displaySavedLocations() {
 
   var data = JSON.parse(localStorage.getItem("locations"));
   if (!data) return;
-  console.log("there is data");
   data.cities.forEach(function (el) {
     var savedLocCard = document.createElement("div");
     savedLocCard.className = "saved-loc-card";
@@ -1015,9 +1085,10 @@ function displaySavedLocations() {
     savedLocTemp.textContent = el.temp + "\xB0F";
     savedLocCard.style.backgroundImage = "url('/images/backgrounds/".concat(el.dayTime, "-").concat(el.condition, ".png')");
     savedLocTime.innerText = el.time;
+    savedLocCard.addEventListener("click", _displayWeatherFromSavedLoc.default);
   });
 }
-},{}],"modules/storeLocations.js":[function(require,module,exports) {
+},{"./displayWeatherFromSavedLoc":"modules/displayWeatherFromSavedLoc.js"}],"modules/storeLocation.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1029,6 +1100,9 @@ var _displaySavedLocations = _interopRequireDefault(require("./displaySavedLocat
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// storeLocation()
+// This function is called by other function displayWeather().
+// This function stores displayed location in a local storage
 function storeLocations(weatherData, city) {
   var data = JSON.parse(localStorage.getItem("locations")); // Convert time from EPOC to normal time
 
@@ -1091,10 +1165,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = displayWeather;
 
-var _storeLocations = _interopRequireDefault(require("./storeLocations"));
+var _storeLocation = _interopRequireDefault(require("./storeLocation"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// displayWeather()
+// This function displays current, hourly, weekly weather
+// and current weather details. Every time this function is called, it calls
+// storeLocations() which saves displayed location in a local storage
 var city = document.querySelector(".curr-weather-city");
 var currTemp = document.querySelector(".curr-weather-temp");
 var currCond = document.querySelector(".curr-weather-condition");
@@ -1262,9 +1340,9 @@ function displayWeather(weatherData, currCity, hourlyWeather, dailyWeather) {
 
   var wind = document.querySelector(".wind-value");
   wind.innerText = windDirection + " " + weatherData.current.wind_speed + " mph";
-  (0, _storeLocations.default)(weatherData, currCity);
+  (0, _storeLocation.default)(weatherData, currCity);
 }
-},{"./storeLocations":"modules/storeLocations.js"}],"modules/googlePlaces.js":[function(require,module,exports) {
+},{"./storeLocation":"modules/storeLocation.js"}],"modules/googlePlaces.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1348,13 +1426,13 @@ function initMap(input) {
     }
   });
 }
-},{"./getWeather":"modules/getWeather.js","./displayWeather":"modules/displayWeather.js"}],"modules/reloadSavedLocations.js":[function(require,module,exports) {
+},{"./getWeather":"modules/getWeather.js","./displayWeather":"modules/displayWeather.js"}],"modules/refreshSavedLocations.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = reloadSavedLocations;
+exports.default = refreshSavedLocations;
 
 var _getWeather = _interopRequireDefault(require("./getWeather"));
 
@@ -1366,7 +1444,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var apiKey = "74a29df014963a5cf46387efc2a24cc3";
 
-function reloadSavedLocations() {
+function refreshSavedLocations() {
   var data = JSON.parse(localStorage.getItem("locations"));
   if (!data) return;
   data.cities.forEach( /*#__PURE__*/function () {
@@ -1376,10 +1454,11 @@ function reloadSavedLocations() {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              _context.next = 2;
+              console.log("refreshed");
+              _context.next = 3;
               return (0, _getWeather.default)(el.lattitude, el.longtitude);
 
-            case 2:
+            case 3:
               weatherData = _context.sent;
               // Convert EPOC time to normal time
               savedLocTimeConv = new Date(weatherData.current.dt * 1000);
@@ -1396,9 +1475,14 @@ function reloadSavedLocations() {
                 dayTime = "night";
               }
 
-              el.temp = Math.floor(weatherData.current.temp), el.time = savedLocTime, el.condition = weatherData.current.weather[0].main, el.dayTime = dayTime;
+              console.log(el.name, "temp is ", weatherData.current.temp);
+              console.log(el.name, "time is ", savedLocTime);
+              console.log(el.name, "condition is ", weatherData.current.weather[0].main);
+              console.log(el.name, "day time is ", dayTime);
+              el.temp = Math.floor(weatherData.current.temp);
+              el.time = savedLocTime, el.condition = weatherData.current.weather[0].main, el.dayTime = dayTime; //console.log(data);
 
-            case 9:
+            case 15:
             case "end":
               return _context.stop();
           }
@@ -1442,7 +1526,7 @@ var _displayWeather = _interopRequireDefault(require("./modules/displayWeather")
 
 var _googlePlaces = _interopRequireDefault(require("./modules/googlePlaces"));
 
-var _reloadSavedLocations = _interopRequireDefault(require("./modules/reloadSavedLocations"));
+var _refreshSavedLocations = _interopRequireDefault(require("./modules/refreshSavedLocations"));
 
 var _displaySavedLocations = _interopRequireDefault(require("./modules/displaySavedLocations"));
 
@@ -1461,7 +1545,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 var searchBtn = document.querySelector("#search-btn");
 var footer = document.querySelector(".footer");
 var input = document.querySelector("#search-input");
-var savedLoc = document.querySelector(".saved-locations");
 var celcBtn = document.querySelector("#celcius-btn");
 var fahrBtn = document.querySelector("#fahr-btn");
 
@@ -1470,7 +1553,7 @@ var toggleLoadding = function toggleLoadding() {
 };
 
 (0, _googlePlaces.default)(input);
-(0, _reloadSavedLocations.default)();
+(0, _refreshSavedLocations.default)();
 
 var weather = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -1519,13 +1602,12 @@ celcBtn.addEventListener("click", function () {
 });
 fahrBtn.addEventListener("click", function () {
   console.log("fahr clicked");
-}); // console.log("here is ", savedLoc);
-// savedLoc.addEventListener("click", (event) => {
-//   console.log("i am clicked", event.target);
+}); // savedLoc.addEventListener("click", (event) => {
+//   console.log("i am clicked");
 // });
 
 weather();
-},{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","./modules/getLatLong":"modules/getLatLong.js","./modules/getWeather":"modules/getWeather.js","./modules/displayWeather":"modules/displayWeather.js","./modules/googlePlaces":"modules/googlePlaces.js","./modules/reloadSavedLocations":"modules/reloadSavedLocations.js","./modules/displaySavedLocations":"modules/displaySavedLocations.js","./modules/switchCelcius":"modules/switchCelcius.js"}],"../../../../../../opt/homebrew/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","./modules/getLatLong":"modules/getLatLong.js","./modules/getWeather":"modules/getWeather.js","./modules/displayWeather":"modules/displayWeather.js","./modules/googlePlaces":"modules/googlePlaces.js","./modules/refreshSavedLocations":"modules/refreshSavedLocations.js","./modules/displaySavedLocations":"modules/displaySavedLocations.js","./modules/switchCelcius":"modules/switchCelcius.js"}],"../../../../../../opt/homebrew/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1553,7 +1635,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53599" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56437" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -1,3 +1,6 @@
+// storeLocation()
+// This function is called by other function displayWeather().
+// This function stores displayed location in a local storage
 import displaySavedLocations from "./displaySavedLocations";
 export default function storeLocations(weatherData, city) {
   const data = JSON.parse(localStorage.getItem("locations"));
