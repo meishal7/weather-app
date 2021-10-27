@@ -22,8 +22,7 @@ export default function initMap(input) {
     const weather = async () => {
       let weatherData = await getWeather(
         place.geometry.location.lat(),
-        place.geometry.location.lng(),
-        degree
+        place.geometry.location.lng()
       );
       let city = place.name;
       const { hourly, daily } = weatherData;

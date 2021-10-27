@@ -22,7 +22,10 @@ export default function displaySavedLocations() {
     savedLocCard.append(savedLocTime, savedLocInnerDiv);
     savedLocations.appendChild(savedLocCard);
     savedLocName.textContent = el.name;
-    savedLocTemp.textContent = el.temp + data.defaultDegree;
+    data.defaultDegree == "\u00B0F"
+      ? (savedLocTemp.textContent = el.temp + data.defaultDegree)
+      : (savedLocTemp.textContent =
+          Math.floor(((el.temp - 32) * 5) / 9) + "\u00B0C");
     savedLocCard.style.backgroundImage = `url('/images/backgrounds/${el.dayTime}-${el.condition}.png')`;
     savedLocTime.innerText = el.time;
 

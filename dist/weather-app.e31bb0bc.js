@@ -944,25 +944,18 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var apiKey = "74a29df014963a5cf46387efc2a24cc3";
-
-function getWeather(_x, _x2, _x3) {
+function getWeather(_x, _x2) {
   return _getWeather.apply(this, arguments);
 }
 
 function _getWeather() {
-  _getWeather = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(lattitude, longtitude, degree) {
-    var weatherRes, data, _weatherRes, _data;
-
+  _getWeather = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(lattitude, longtitude) {
+    var apiKey, weatherRes, data;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            if (!(degree == "\xB0F")) {
-              _context.next = 10;
-              break;
-            }
-
+            apiKey = "74a29df014963a5cf46387efc2a24cc3";
             _context.next = 3;
             return fetch("https://api.openweathermap.org/data/2.5/onecall?lat=".concat(lattitude, "&lon=").concat(longtitude, "&units=imperial&appid=").concat(apiKey));
 
@@ -975,20 +968,7 @@ function _getWeather() {
             data = _context.sent;
             return _context.abrupt("return", data);
 
-          case 10:
-            _context.next = 12;
-            return fetch("https://api.openweathermap.org/data/2.5/onecall?lat=".concat(lattitude, "&lon=").concat(longtitude, "&units=metric&appid=").concat(apiKey));
-
-          case 12:
-            _weatherRes = _context.sent;
-            _context.next = 15;
-            return _weatherRes.json();
-
-          case 15:
-            _data = _context.sent;
-            return _context.abrupt("return", _data);
-
-          case 17:
+          case 8:
           case "end":
             return _context.stop();
         }
@@ -1006,7 +986,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = displayCurrLocationWeather;
 
 function displayCurrLocationWeather(weatherData, currCity, hourlyWeather, dailyWeather, degree) {
-  console.log("display current loc");
   var city = document.querySelector(".curr-weather-city");
   var currTemp = document.querySelector(".curr-weather-temp");
   var currCond = document.querySelector(".curr-weather-condition");
@@ -1017,11 +996,19 @@ function displayCurrLocationWeather(weatherData, currCity, hourlyWeather, dailyW
   var weekWeatherList = document.querySelector(".week-weather-list");
   var footer = document.querySelector(".footer"); // Current weather
 
-  city.textContent = currCity;
-  currTemp.textContent = Math.floor(weatherData.current.temp) + degree;
-  currCond.textContent = weatherData.current.weather[0].main;
-  currWeatherMin.textContent = Math.floor(weatherData.daily[0].temp.min) + degree;
-  currWeatherMax.textContent = Math.floor(weatherData.daily[0].temp.max) + degree; // Determine if it's day or night and display background
+  city.textContent = currCity; // If degree == Fahrenheight
+
+  if (degree == "\xB0F") {
+    currTemp.textContent = Math.floor(weatherData.current.temp) + degree;
+    currWeatherMin.textContent = Math.floor(weatherData.daily[0].temp.min) + degree;
+    currWeatherMax.textContent = Math.floor(weatherData.daily[0].temp.max) + degree;
+  } else {
+    currTemp.textContent = Math.floor((weatherData.current.temp - 32) * 5 / 9) + "\xB0C";
+    currWeatherMin.textContent = Math.floor((weatherData.daily[0].temp.min - 32) * 5 / 9) + "\xB0C";
+    currWeatherMax.textContent = Math.floor((weatherData.daily[0].temp.max - 32) * 5 / 9) + "\xB0C";
+  }
+
+  currCond.textContent = weatherData.current.weather[0].main; // Determine if it's day or night and display background
 
   var currentWeatherDayTime = "";
 
@@ -1035,6 +1022,8 @@ function displayCurrLocationWeather(weatherData, currCity, hourlyWeather, dailyW
     currentWeatherDayTime = "night";
     currWeatherDiv.style.backgroundImage = "url('/images/backgrounds/".concat(currentWeatherDayTime, "-").concat(weatherData.current.weather[0].main, ".png')");
   } // Hourly weather
+  // Remove noodes for displaying the weather from saved location when
+  // there is already displayed current weather, otherwise it would add new nodes
 
 
   while (hourWeatherList.firstChild && hourWeatherList.lastChild) {
@@ -1069,9 +1058,9 @@ function displayCurrLocationWeather(weatherData, currCity, hourlyWeather, dailyW
     } // Display only time first digit and am/pm letters
 
 
-    time.innerText = timeArray[0] + timeArray[2].charAt(3) + timeArray[2].charAt(4);
-    temp.innerText = "".concat(Math.ceil(hour.temp)) + degree; // Round tempreture
+    time.innerText = timeArray[0] + timeArray[2].charAt(3) + timeArray[2].charAt(4); // If degree == Fahrenheight
 
+    degree == "\xB0F" ? temp.innerText = "".concat(Math.ceil(hour.temp)) + degree : temp.innerText = "".concat(Math.ceil((hour.temp - 32) * 5 / 9)) + "\xB0C";
     hourImg.src = "./images/icons/".concat(hourDayTime, "-").concat(hour.weather[0].main, ".png");
     hourImg.classList.add("hour-weather-img");
     hourLi.append(time, hourImg, temp);
@@ -1132,9 +1121,16 @@ function displayCurrLocationWeather(weatherData, currCity, hourlyWeather, dailyW
     weekDayName.innerText = dayName;
     weekImgCond.src = "./images/icons/day-".concat(day.weather[0].main, ".png");
     weekImgTempLow.src = "./images/icons/thermometer-low.png";
-    weekTempLow.innerText = "".concat(Math.ceil(day.temp.min)) + degree;
+
+    if (degree == "\xB0F") {
+      weekTempLow.innerText = "".concat(Math.ceil(day.temp.min)) + degree;
+      weekTempHigh.innerText = "".concat(Math.ceil(day.temp.max)) + degree;
+    } else {
+      weekTempLow.innerText = "".concat(Math.ceil((day.temp.min - 32) * 5 / 9)) + degree;
+      weekTempHigh.innerText = "".concat(Math.ceil((day.temp.max - 32) * 5 / 9)) + degree;
+    }
+
     weekImgTempHigh.src = "./images/icons/thermometer-high.png";
-    weekTempHigh.innerText = "".concat(Math.ceil(day.temp.max)) + degree;
     weekImgHumidity.src = "./images/icons/drop.png";
     weekHumidity.innerText = day.humidity + "%";
     weekImgCondDiv.appendChild(weekImgCond);
@@ -1160,7 +1156,7 @@ function displayCurrLocationWeather(weatherData, currCity, hourlyWeather, dailyW
   humidity.innerText = weatherData.current.humidity + "%"; // Feels like
 
   var feelsLike = document.querySelector(".feels-like-value");
-  feelsLike.innerText = "".concat(Math.ceil(weatherData.current.feels_like)) + degree; // Pressure
+  degree == "\xB0F" ? feelsLike.innerText = "".concat(Math.ceil(weatherData.current.feels_like)) + degree : feelsLike.innerText = "".concat(Math.ceil((weatherData.current.feels_like - 32) * 5 / 9)) + "\xB0C"; // Pressure
 
   var pressureConverted = weatherData.current.pressure / 33.86;
   var pressure = document.querySelector(".pressure-value");
@@ -1224,19 +1220,18 @@ function displayWeatherFromSavedLoc(event) {
           switch (_context.prev = _context.next) {
             case 0:
               if (!(city.name == event.target.childNodes[0].innerText)) {
-                _context.next = 11;
+                _context.next = 10;
                 break;
               }
 
               _context.next = 3;
-              return (0, _getWeather.default)(city.lattitude, city.longtitude, data.defaultDegree);
+              return (0, _getWeather.default)(city.lattitude, city.longtitude);
 
             case 3:
               weatherData = _context.sent;
-              console.log(data.defaultDegree);
               hourly = weatherData.hourly, daily = weatherData.daily;
               hourWeatherList = document.querySelector(".hour-weather-list");
-              weekWeatherList = document.querySelector(".week-weather-list"); // Remove childNodes from hourWeatherList and weekWeatherList
+              weekWeatherList = document.querySelector(".week-weather-list");
 
               while (hourWeatherList.firstChild && hourWeatherList.lastChild) {
                 hourWeatherList.removeChild(hourWeatherList.firstChild);
@@ -1248,7 +1243,7 @@ function displayWeatherFromSavedLoc(event) {
 
               (0, _displayCurrLocationWeather.default)(weatherData, city.name, hourly, daily, data.defaultDegree);
 
-            case 11:
+            case 10:
             case "end":
               return _context.stop();
           }
@@ -1296,7 +1291,7 @@ function displaySavedLocations() {
     savedLocCard.append(savedLocTime, savedLocInnerDiv);
     savedLocations.appendChild(savedLocCard);
     savedLocName.textContent = el.name;
-    savedLocTemp.textContent = el.temp + data.defaultDegree;
+    data.defaultDegree == "\xB0F" ? savedLocTemp.textContent = el.temp + data.defaultDegree : savedLocTemp.textContent = Math.floor((el.temp - 32) * 5 / 9) + "\xB0C";
     savedLocCard.style.backgroundImage = "url('/images/backgrounds/".concat(el.dayTime, "-").concat(el.condition, ".png')");
     savedLocTime.innerText = el.time;
     savedLocCard.addEventListener("click", _displayWeatherFromSavedLoc.default);
@@ -1459,7 +1454,7 @@ function initMap(input) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return (0, _getWeather.default)(place.geometry.location.lat(), place.geometry.location.lng(), degree);
+                return (0, _getWeather.default)(place.geometry.location.lat(), place.geometry.location.lng());
 
               case 2:
                 weatherData = _context.sent;
@@ -1638,20 +1633,21 @@ celcBtn.addEventListener("click", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/r
 
         case 2:
           toggleLoadding();
+          footer.classList.toggle("footer-open");
           (0, _setDegree.default)("\xB0C");
           degree = (0, _getDegree.default)();
-          _context2.next = 7;
+          _context2.next = 8;
           return (0, _getLatLong.default)();
 
-        case 7:
+        case 8:
           coordinates = _context2.sent;
           lat = coordinates[0];
           lon = coordinates[1];
           currCity = coordinates[2];
-          _context2.next = 13;
-          return (0, _getWeather.default)(lat, lon, degree);
+          _context2.next = 14;
+          return (0, _getWeather.default)(lat, lon);
 
-        case 13:
+        case 14:
           weatherData = _context2.sent;
           hourly = weatherData.hourly, daily = weatherData.daily;
           (0, _displayCurrLocationWeather.default)(weatherData, currCity, hourly, daily, degree);
@@ -1659,7 +1655,7 @@ celcBtn.addEventListener("click", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/r
           (0, _displaySavedLocations.default)();
           toggleLoadding();
 
-        case 19:
+        case 20:
         case "end":
           return _context2.stop();
       }
@@ -1681,20 +1677,21 @@ fahrBtn.addEventListener("click", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/r
 
         case 2:
           toggleLoadding();
+          footer.classList.toggle("footer-open");
           (0, _setDegree.default)("\xB0F");
           degree = (0, _getDegree.default)();
-          _context3.next = 7;
+          _context3.next = 8;
           return (0, _getLatLong.default)();
 
-        case 7:
+        case 8:
           coordinates = _context3.sent;
           lat = coordinates[0];
           lon = coordinates[1];
           currCity = coordinates[2];
-          _context3.next = 13;
+          _context3.next = 14;
           return (0, _getWeather.default)(lat, lon, degree);
 
-        case 13:
+        case 14:
           weatherData = _context3.sent;
           hourly = weatherData.hourly, daily = weatherData.daily;
           (0, _displayCurrLocationWeather.default)(weatherData, currCity, hourly, daily, degree);
@@ -1702,7 +1699,7 @@ fahrBtn.addEventListener("click", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/r
           (0, _displaySavedLocations.default)();
           toggleLoadding();
 
-        case 19:
+        case 20:
         case "end":
           return _context3.stop();
       }
@@ -1738,7 +1735,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64067" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49196" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

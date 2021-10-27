@@ -7,16 +7,11 @@ export default function displayWeatherFromSavedLoc(event) {
   const data = JSON.parse(localStorage.getItem("locations"));
   data.cities.forEach(async (city) => {
     if (city.name == event.target.childNodes[0].innerText) {
-      const weatherData = await getWeather(
-        city.lattitude,
-        city.longtitude,
-        data.defaultDegree
-      );
-      console.log(data.defaultDegree);
+      const weatherData = await getWeather(city.lattitude, city.longtitude);
       const { hourly, daily } = weatherData;
       const hourWeatherList = document.querySelector(".hour-weather-list");
       const weekWeatherList = document.querySelector(".week-weather-list");
-      // Remove childNodes from hourWeatherList and weekWeatherList
+      
       while (hourWeatherList.firstChild && hourWeatherList.lastChild) {
         hourWeatherList.removeChild(hourWeatherList.firstChild);
       }

@@ -42,13 +42,14 @@ searchBtn.addEventListener("click", () => {
 celcBtn.addEventListener("click", async () => {
   if (celcBtn.classList.contains("active-btn")) return;
   toggleLoadding();
+  footer.classList.toggle("footer-open");
   setDegree("\u00B0C");
   let degree = getDegree();
   let coordinates = await getLatLong();
   let lat = coordinates[0];
   let lon = coordinates[1];
   let currCity = coordinates[2];
-  const weatherData = await getWeather(lat, lon, degree);
+  const weatherData = await getWeather(lat, lon);
   const { hourly, daily } = weatherData;
   displayCurrLocationWeather(weatherData, currCity, hourly, daily, degree);
   storeLocations(weatherData, currCity);
@@ -58,6 +59,7 @@ celcBtn.addEventListener("click", async () => {
 fahrBtn.addEventListener("click", async () => {
   if (fahrBtn.classList.contains("active-btn")) return;
   toggleLoadding();
+  footer.classList.toggle("footer-open");
   setDegree("\u00B0F");
   let degree = getDegree();
   let coordinates = await getLatLong();
