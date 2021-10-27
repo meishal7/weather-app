@@ -331,3 +331,24 @@ body {
 input:focus {
   outline: none;
 }
+.search-and-temp-switch {
+  display: flex;
+  justify-content: space-between;
+}
+.temp-buttons-div {
+  margin-top: 5rem;
+  margin-right: 3rem;
+}
+.temp-btn {
+  border: none;
+  background: transparent;
+  color: #b6b6b6;
+  font-size: 20px;
+}
+.temp-buttons-div span {
+  color: #b6b6b6;
+  font-size: 20px;
+}
+.active-btn {
+  color: #fffafa;
+}

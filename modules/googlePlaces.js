@@ -1,13 +1,16 @@
 import getWeather from "./getWeather";
-import displayWeather from "./displayWeather";
-const hourWeatherList = document.querySelector(".hour-weather-list");
-const weekWeatherList = document.querySelector(".week-weather-list");
+import displayCurrLocationWeather from "./displayCurrLocationWeather";
+import getDegree from "./getDegree";
+import displaySavedLocations from "./displaySavedLocations";
+import storeLocations from "./storeLocations";
 
-const footer = document.querySelector(".footer");
 export default function initMap(input) {
+  const hourWeatherList = document.querySelector(".hour-weather-list");
+  const weekWeatherList = document.querySelector(".week-weather-list");
+  const footer = document.querySelector(".footer");
+  let degree = getDegree();
   if (!input) return;
   const options = {
-    // componentRestrictions: { country: "us" },
     fields: ["geometry", "icon", "name", "place_id"],
     strictBounds: false,
     types: ["(cities)"],
@@ -16,26 +19,24 @@ export default function initMap(input) {
 
   dropdown.addListener("place_changed", () => {
     const place = dropdown.getPlace();
-
-    console.log(place);
-    console.log(place.geometry.location.lat());
-    console.log(place.geometry.location.lng());
-
     const weather = async () => {
       let weatherData = await getWeather(
         place.geometry.location.lat(),
-        place.geometry.location.lng()
+        place.geometry.location.lng(),
+        degree
       );
       let city = place.name;
       const { hourly, daily } = weatherData;
-      //removeNodes();
+
       while (hourWeatherList.firstChild && hourWeatherList.lastChild) {
         hourWeatherList.removeChild(hourWeatherList.firstChild);
       }
       while (weekWeatherList.firstChild && weekWeatherList.lastChild) {
         weekWeatherList.removeChild(weekWeatherList.firstChild);
       }
-      displayWeather(weatherData, city, hourly, daily);
+      displayCurrLocationWeather(weatherData, city, hourly, daily, degree);
+      storeLocations(weatherData, city);
+      displaySavedLocations();
     };
     weather();
     footer.classList.toggle("footer-open");

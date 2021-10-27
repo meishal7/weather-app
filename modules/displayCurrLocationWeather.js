@@ -1,33 +1,29 @@
-// displayWeather()
-// This function displays current, hourly, weekly weather
-// and current weather details. Every time this function is called, it calls
-// storeLocations() which saves displayed location in a local storage
-import storeLocations from "./storeLocation";
-
-const city = document.querySelector(".curr-weather-city");
-const currTemp = document.querySelector(".curr-weather-temp");
-const currCond = document.querySelector(".curr-weather-condition");
-const currWeatherDiv = document.querySelector(".current-weather");
-const currWeatherMin = document.querySelector(".curr-weather-min");
-const currWeatherMax = document.querySelector(".curr-weather-max");
-const hourWeatherList = document.querySelector(".hour-weather-list");
-const weekWeatherList = document.querySelector(".week-weather-list");
-const footer = document.querySelector(".footer");
-
-export default function displayWeather(
+export default function displayCurrLocationWeather(
   weatherData,
   currCity,
   hourlyWeather,
-  dailyWeather
+  dailyWeather,
+  degree
 ) {
+  console.log("display current loc");
+  const city = document.querySelector(".curr-weather-city");
+  const currTemp = document.querySelector(".curr-weather-temp");
+  const currCond = document.querySelector(".curr-weather-condition");
+  const currWeatherDiv = document.querySelector(".current-weather");
+  const currWeatherMin = document.querySelector(".curr-weather-min");
+  const currWeatherMax = document.querySelector(".curr-weather-max");
+  const hourWeatherList = document.querySelector(".hour-weather-list");
+  const weekWeatherList = document.querySelector(".week-weather-list");
+  const footer = document.querySelector(".footer");
+
   // Current weather
   city.textContent = currCity;
-  currTemp.textContent = Math.floor(weatherData.current.temp) + "\u00B0F";
+  currTemp.textContent = Math.floor(weatherData.current.temp) + degree;
   currCond.textContent = weatherData.current.weather[0].main;
   currWeatherMin.textContent =
-    Math.floor(weatherData.daily[0].temp.min) + "\u00B0F";
+    Math.floor(weatherData.daily[0].temp.min) + degree;
   currWeatherMax.textContent =
-    Math.floor(weatherData.daily[0].temp.max) + "\u00B0F";
+    Math.floor(weatherData.daily[0].temp.max) + degree;
   // Determine if it's day or night and display background
   let currentWeatherDayTime = "";
   if (
@@ -48,6 +44,9 @@ export default function displayWeather(
   }
 
   // Hourly weather
+  while (hourWeatherList.firstChild && hourWeatherList.lastChild) {
+    hourWeatherList.removeChild(hourWeatherList.firstChild);
+  }
   hourlyWeather.forEach((hour) => {
     const date = new Date(hour.dt * 1000);
     const hourLi = document.createElement("li");
@@ -92,7 +91,7 @@ export default function displayWeather(
     // Display only time first digit and am/pm letters
     time.innerText =
       timeArray[0] + timeArray[2].charAt(3) + timeArray[2].charAt(4);
-    temp.innerText = `${Math.ceil(hour.temp)}\u00B0F`; // Round tempreture
+    temp.innerText = `${Math.ceil(hour.temp)}` + degree; // Round tempreture
     hourImg.src = `./images/icons/${hourDayTime}-${hour.weather[0].main}.png`;
     hourImg.classList.add("hour-weather-img");
     hourLi.append(time, hourImg, temp);
@@ -100,6 +99,10 @@ export default function displayWeather(
   });
 
   // Week weather
+  while (weekWeatherList.firstChild && weekWeatherList.lastChild) {
+    weekWeatherList.removeChild(weekWeatherList.firstChild);
+  }
+
   dailyWeather.forEach((day) => {
     const weekLi = document.createElement("li");
     const weekDayName = document.createElement("p");
@@ -144,9 +147,9 @@ export default function displayWeather(
     weekDayName.innerText = dayName;
     weekImgCond.src = `./images/icons/day-${day.weather[0].main}.png`;
     weekImgTempLow.src = `./images/icons/thermometer-low.png`;
-    weekTempLow.innerText = `${Math.ceil(day.temp.min)}\u00B0F`;
+    weekTempLow.innerText = `${Math.ceil(day.temp.min)}` + degree;
     weekImgTempHigh.src = `./images/icons/thermometer-high.png`;
-    weekTempHigh.innerText = `${Math.ceil(day.temp.max)}\u00B0F`;
+    weekTempHigh.innerText = `${Math.ceil(day.temp.max)}` + degree;
     weekImgHumidity.src = `./images/icons/drop.png`;
     weekHumidity.innerText = day.humidity + `\u0025`;
 
@@ -194,7 +197,7 @@ export default function displayWeather(
   humidity.innerText = weatherData.current.humidity + `\u0025`;
   // Feels like
   const feelsLike = document.querySelector(".feels-like-value");
-  feelsLike.innerText = `${Math.ceil(weatherData.current.feels_like)}\u00B0F`;
+  feelsLike.innerText = `${Math.ceil(weatherData.current.feels_like)}` + degree;
   // Pressure
   let pressureConverted = weatherData.current.pressure / 33.86;
   const pressure = document.querySelector(".pressure-value");
@@ -219,6 +222,4 @@ export default function displayWeather(
   const wind = document.querySelector(".wind-value");
   wind.innerText =
     windDirection + " " + weatherData.current.wind_speed + " mph";
-
-  storeLocations(weatherData, currCity);
 }

@@ -1,12 +1,7 @@
-// displaySavedLocations()
-// This function goes through saved locations in local storage and displays
-// city name, tempreture and time for every saved location in savedLocations div
-
 import displayWeatherFromSavedLoc from "./displayWeatherFromSavedLoc";
 
-const savedLocations = document.querySelector(".saved-locations");
-
 export default function displaySavedLocations() {
+  const savedLocations = document.querySelector(".saved-locations");
   while (savedLocations.firstChild && savedLocations.lastChild) {
     savedLocations.removeChild(savedLocations.firstChild);
   }
@@ -27,7 +22,7 @@ export default function displaySavedLocations() {
     savedLocCard.append(savedLocTime, savedLocInnerDiv);
     savedLocations.appendChild(savedLocCard);
     savedLocName.textContent = el.name;
-    savedLocTemp.textContent = el.temp + "\u00B0F";
+    savedLocTemp.textContent = el.temp + data.defaultDegree;
     savedLocCard.style.backgroundImage = `url('/images/backgrounds/${el.dayTime}-${el.condition}.png')`;
     savedLocTime.innerText = el.time;
 

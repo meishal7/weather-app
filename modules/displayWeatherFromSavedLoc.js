@@ -1,11 +1,18 @@
-import displayWeather from "./displayWeather";
+import displayCurrLocationWeather from "./displayCurrLocationWeather";
 import getWeather from "./getWeather";
 
-export default function displaySavedLocations(event) {
+export default function displayWeatherFromSavedLoc(event) {
+  const footer = document.querySelector(".footer");
+  footer.classList.toggle("footer-open");
   const data = JSON.parse(localStorage.getItem("locations"));
   data.cities.forEach(async (city) => {
     if (city.name == event.target.childNodes[0].innerText) {
-      const weatherData = await getWeather(city.lattitude, city.longtitude);
+      const weatherData = await getWeather(
+        city.lattitude,
+        city.longtitude,
+        data.defaultDegree
+      );
+      console.log(data.defaultDegree);
       const { hourly, daily } = weatherData;
       const hourWeatherList = document.querySelector(".hour-weather-list");
       const weekWeatherList = document.querySelector(".week-weather-list");
@@ -17,7 +24,13 @@ export default function displaySavedLocations(event) {
         weekWeatherList.removeChild(weekWeatherList.firstChild);
       }
 
-      displayWeather(weatherData, city.name, hourly, daily);
+      displayCurrLocationWeather(
+        weatherData,
+        city.name,
+        hourly,
+        daily,
+        data.defaultDegree
+      );
     }
   });
 }
