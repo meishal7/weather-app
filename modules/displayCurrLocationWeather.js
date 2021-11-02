@@ -13,7 +13,6 @@ export default function displayCurrLocationWeather(
   const currWeatherMax = document.querySelector(".curr-weather-max");
   const hourWeatherList = document.querySelector(".hour-weather-list");
   const weekWeatherList = document.querySelector(".week-weather-list");
-  const footer = document.querySelector(".footer");
 
   // Current weather
   city.textContent = currCity;
@@ -42,13 +41,15 @@ export default function displayCurrLocationWeather(
   ) {
     currentWeatherDayTime = "day";
     currWeatherDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
-  } else if (
+  }
+  if (
     weatherData.current.dt > weatherData.current.sunrise &&
     weatherData.current.dt > weatherData.current.sunset
   ) {
     currentWeatherDayTime = "night";
     currWeatherDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
-  } else if (weatherData.current.dt < weatherData.current.sunrise) {
+  }
+  if (weatherData.current.dt < weatherData.current.sunrise) {
     currentWeatherDayTime = "night";
     currWeatherDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
   }
@@ -67,9 +68,11 @@ export default function displayCurrLocationWeather(
     const temp = document.createElement("p");
     temp.classList = "hour-temp";
     const hourImg = document.createElement("img");
+
     // Convert EPOCH seconds to local time and split resullting string into array
     // for using only needed parts of that string in html element
     let timeArray = date.toLocaleTimeString().split(":");
+
     // Check if it's day or night
     let hourDayTime = "";
     if (

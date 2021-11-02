@@ -52,17 +52,25 @@ body {
 .card p {
   margin: 0;
 }
+.hour-weather {
+  display: flex;
+}
 .hour-weather-list {
   display: flex;
+  scroll-behavior: smooth;
   gap: 15px;
   list-style-type: none;
   padding-left: 0;
   justify-content: space-between;
-  overflow-x: scroll;
+  overflow-x: auto;
   scroll-snap-type: x mandatory;
   padding-bottom: 15px;
   margin: 0;
   margin-bottom: -15px;
+  scrollbar-width: none;
+}
+.hour-weather-list::-webkit-scrollbar {
+  display: none;
 }
 
 .hour-weather-list > li {
@@ -123,8 +131,8 @@ body {
 .current-weather {
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
-  height: 180px;
+  background-position: 0% 25%;
+  height: 200px;
   border-bottom-left-radius: 81% 15%;
   border-bottom-right-radius: 81% 15%;
   box-shadow: inset 0px -6px 4px rgba(0, 0, 0, 0.25);
@@ -137,7 +145,7 @@ body {
   font-size: 36px;
   line-height: 43px;
   margin: 0 0;
-  padding-top: 1.5rem;
+  padding-top: 2.5rem;
   color: #fffafa;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
 }
@@ -262,16 +270,7 @@ body {
 .footer.footer-open img:last-of-type {
   display: block;
 }
-.pac-container {
-  background: transparent;
-}
-.pac-container:hover {
-  background-color: transparent;
-}
 
-.pac-item-query {
-  color: #fffafa;
-}
 .pac-item-query:hover {
   color: black;
 }
@@ -283,8 +282,8 @@ body {
   animation-name: endBrowserAutofill;
   border: white 1 px solid;
   border-radius: 4px;
-  background: transparent;
-  color: #fffafa;
+
+  color: black;
   font-family: "Rubik", sans-serif;
   width: 150px;
   margin-left: 30px;
@@ -302,7 +301,12 @@ body {
   display: block;
 }
 .saved-locations {
-  overflow: scroll;
+  max-height: 450px;
+  overflow: auto;
+  scrollbar-width: none;
+}
+.saved-locations::-webkit-scrollbar {
+  display: none;
 }
 .saved-loc-card {
   margin: 10px 30px;
@@ -351,6 +355,16 @@ input:focus {
 }
 .active-btn {
   color: #fffafa;
+}
+.arrow-btn {
+  border: none;
+  background: transparent;
+  font-size: 5rem;
+  color: white;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+}
+.no-scroll {
+  overflow: hidden;
 }
 
 

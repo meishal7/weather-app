@@ -10,5 +10,9 @@
   "license": "ISC",
   "devDependencies": {
     "parcel": "^2.0.0"
+  },
+  "dependencies": {
+    "date-fns": "^2.25.0",
+    "date-fns-tz": "^1.1.6"
   }
 }

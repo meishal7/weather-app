@@ -1,4 +1,5 @@
 import displayWeatherFromSavedLoc from "./displayWeatherFromSavedLoc";
+import { format } from "date-fns";
 
 export default function displaySavedLocations() {
   const savedLocations = document.querySelector(".saved-locations");
@@ -9,6 +10,17 @@ export default function displaySavedLocations() {
   if (!data) return;
 
   data.cities.forEach((el) => {
+    function convertTZ(date, tzString) {
+      return new Date(
+        (typeof date === "string" ? new Date(date) : date).toLocaleString(
+          "en-US",
+          { timeZone: tzString }
+        )
+      );
+    }
+    const convertedDate = convertTZ(new Date(), el.timezone);
+    const formattedTime = format(convertedDate, "hh:mma");
+
     const savedLocCard = document.createElement("div");
     savedLocCard.className = "saved-loc-card";
     const savedLocInnerDiv = document.createElement("div");
@@ -27,7 +39,7 @@ export default function displaySavedLocations() {
       : (savedLocTemp.textContent =
           Math.floor(((el.temp - 32) * 5) / 9) + "\u00B0C");
     savedLocCard.style.backgroundImage = `url('/images/backgrounds/${el.dayTime}-${el.condition}.png')`;
-    savedLocTime.innerText = el.time;
+    savedLocTime.innerText = formattedTime;
 
     savedLocCard.addEventListener("click", displayWeatherFromSavedLoc);
   });

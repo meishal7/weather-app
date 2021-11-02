@@ -3,7 +3,6 @@ export default async function getWeather(lattitude, longtitude) {
   const weatherRes = await fetch(
     `https://api.openweathermap.org/data/2.5/onecall?lat=${lattitude}&lon=${longtitude}&units=imperial&appid=${apiKey}`
   );
-
   const data = await weatherRes.json();
   return data;
 }
