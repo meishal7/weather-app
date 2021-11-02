@@ -2,3 +2,4 @@
 .env
 plan.txt
 node_modules
+.cache
