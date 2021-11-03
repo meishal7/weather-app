@@ -5,6 +5,7 @@ import displaySavedLocations from "./displaySavedLocations";
 import storeLocations from "./storeLocations";
 
 export default function initMap(input) {
+  if (!google) return;
   const hourWeatherList = document.querySelector(".hour-weather-list");
   const weekWeatherList = document.querySelector(".week-weather-list");
   const footer = document.querySelector(".footer");
