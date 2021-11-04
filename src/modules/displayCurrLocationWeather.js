@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 export default function displayCurrLocationWeather(
   weatherData,
   currCity,
@@ -15,14 +16,14 @@ export default function displayCurrLocationWeather(
   const weekWeatherList = document.querySelector(".week-weather-list");
 
   // Current weather
-  city.textContent = currCity;
-  // If degree == Fahrenheight
+  // If degree == Fahrenheight display temp in fahr
   if (degree == "\u00B0F") {
     currTemp.textContent = Math.floor(weatherData.current.temp) + degree;
     currWeatherMin.textContent =
       Math.floor(weatherData.daily[0].temp.min) + degree;
     currWeatherMax.textContent =
       Math.floor(weatherData.daily[0].temp.max) + degree;
+    // Otherwise display temp in celcius
   } else {
     currTemp.textContent =
       Math.floor(((weatherData.current.temp - 32) * 5) / 9) + "\u00B0C";
@@ -31,28 +32,28 @@ export default function displayCurrLocationWeather(
     currWeatherMax.textContent =
       Math.floor(((weatherData.daily[0].temp.max - 32) * 5) / 9) + "\u00B0C";
   }
-  currCond.textContent = weatherData.current.weather[0].main;
 
-  // Determine if it's day or night and display background
+  // Function for converting time to displayed location timezone time
+  function convertTZ(date, tzString) {
+    return new Date(
+      (typeof date === "string" ? new Date(date) : date).toLocaleString(
+        "en-US",
+        { timeZone: tzString }
+      )
+    );
+  }
+
+  // Determine if it's day or night for correct background img
+  const convertedDate = convertTZ(new Date(), weatherData.timezone);
   let currentWeatherDayTime = "";
-  if (
-    weatherData.current.dt > weatherData.current.sunrise &&
-    weatherData.current.dt < weatherData.current.sunset
-  ) {
-    currentWeatherDayTime = "day";
-    currWeatherDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
-  }
-  if (
-    weatherData.current.dt > weatherData.current.sunrise &&
-    weatherData.current.dt > weatherData.current.sunset
-  ) {
-    currentWeatherDayTime = "night";
-    currWeatherDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
-  }
-  if (weatherData.current.dt < weatherData.current.sunrise) {
-    currentWeatherDayTime = "night";
-    currWeatherDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
-  }
+  convertedDate.getHours() >= 6 && convertedDate.getHours() < 18
+    ? (currentWeatherDayTime = "day")
+    : (currentWeatherDayTime = "night");
+
+  currWeatherDiv.style.backgroundImage = `url('/images/backgrounds/${currentWeatherDayTime}-${weatherData.current.weather[0].main}.png')`;
+
+  currCond.textContent = weatherData.current.weather[0].main;
+  city.textContent = currCity;
 
   // Hourly weather
   // Remove noodes for displaying the weather from saved location when
@@ -62,51 +63,22 @@ export default function displayCurrLocationWeather(
   }
 
   hourlyWeather.forEach((hour) => {
-    const date = new Date(hour.dt * 1000);
     const hourLi = document.createElement("li");
     const time = document.createElement("p");
     const temp = document.createElement("p");
     temp.classList = "hour-temp";
     const hourImg = document.createElement("img");
 
-    // Convert EPOCH seconds to local time and split resullting string into array
-    // for using only needed parts of that string in html element
-    let timeArray = date.toLocaleTimeString().split(":");
-
-    // Check if it's day or night
+    // Check if it's day or night for correct icon
+    const date = new Date(hour.dt * 1000);
+    const convertedDateHourWeather = convertTZ(date, weatherData.timezone);
     let hourDayTime = "";
-    if (
-      timeArray[2].charAt(3) == "A" &&
-      timeArray[0] >= 6 &&
-      timeArray[0] <= 11
-    ) {
-      hourDayTime = "day";
-    } else if (timeArray[2].charAt(3) == "P" && timeArray[0] == 12) {
-      hourDayTime = "day";
-    } else if (
-      timeArray[2].charAt(3) == "P" &&
-      timeArray[0] >= 1 &&
-      timeArray[0] <= 5
-    ) {
-      hourDayTime = "day";
-    } else if (
-      timeArray[2].charAt(3) == "P" &&
-      timeArray[0] > 5 &&
-      timeArray[0] <= 11
-    ) {
-      hourDayTime = "night";
-    } else if (timeArray[2].charAt(3) == "A" && timeArray[0] == 12) {
-      hourDayTime = "night";
-    } else if (
-      timeArray[2].charAt(3) == "A" &&
-      timeArray[0] >= 1 &&
-      timeArray[0] < 6
-    ) {
-      hourDayTime = "night";
-    }
-    // Display only time first digit and am/pm letters
-    time.innerText =
-      timeArray[0] + timeArray[2].charAt(3) + timeArray[2].charAt(4);
+    convertedDateHourWeather.getHours() >= 6 &&
+    convertedDateHourWeather.getHours() < 18
+      ? (hourDayTime = "day")
+      : (hourDayTime = "night");
+
+    time.innerText = format(convertedDateHourWeather, "ha");
     // If degree == Fahrenheight
     degree == "\u00B0F"
       ? (temp.innerText = `${Math.ceil(hour.temp)}` + degree)
@@ -139,31 +111,10 @@ export default function displayCurrLocationWeather(
     const weekImgHumidity = document.createElement("img");
     const weekHumidity = document.createElement("p");
 
-    const weekDate = new Date(day.dt * 1000);
-    let dayName = "";
-    switch (weekDate.getUTCDay()) {
-      case 0:
-        dayName = "Sunday";
-        break;
-      case 1:
-        dayName = "Monday";
-        break;
-      case 2:
-        dayName = "Tuesday";
-        break;
-      case 3:
-        dayName = "Wednesday";
-        break;
-      case 4:
-        dayName = "Thursday";
-        break;
-      case 5:
-        dayName = "Friday";
-        break;
-      case 6:
-        dayName = "Saturday";
-        break;
-    }
+    // Get weekday
+    const date = new Date(day.dt * 1000);
+    const convertedDateWeekWeather = convertTZ(date, weatherData.timezone);
+    let dayName = format(convertedDateWeekWeather, "EEEE");
 
     weekDayName.innerText = dayName;
     weekImgCond.src = `./images/icons/day-${day.weather[0].main}.png`;

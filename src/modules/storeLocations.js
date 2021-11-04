@@ -25,7 +25,7 @@ export default function storeLocations(weatherData, city) {
       lattitude: weatherData.lat,
       longtitude: weatherData.lon,
       condition: weatherData.current.weather[0].main,
-      dayTime: dayTime,
+      //dayTime: dayTime,
     };
 
     data.cities.push(obj);

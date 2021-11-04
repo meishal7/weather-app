@@ -3,6 +3,7 @@ import displayCurrLocationWeather from "./displayCurrLocationWeather";
 import getDegree from "./getDegree";
 import displaySavedLocations from "./displaySavedLocations";
 import storeLocations from "./storeLocations";
+import toggleFooterBody from "./toggleFooterBody";
 
 export default function initMap(input) {
   const hourWeatherList = document.querySelector(".hour-weather-list");
@@ -38,7 +39,7 @@ export default function initMap(input) {
       displaySavedLocations();
     };
     weather();
-    footer.classList.toggle("footer-open");
+    toggleFooterBody();
   });
 
   input.addEventListener("keydown", (e) => {

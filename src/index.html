@@ -7,6 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      href="https://fonts.googleapis.com/css?family=Actor"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
       href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap"
       rel="stylesheet"
     />
@@ -16,7 +21,13 @@
   </head>
   <body>
     <div class="wrapper">
-      <div class="spinner"><h1>Loading...</h1></div>
+      <div class="loader">
+        <h1 class="loader-header">LOADING</h1>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <!-- <div class="spinner"><h1>Loading...</h1></div> -->
       <div class="app">
         <div class="current-weather">
           <p class="curr-weather-city"></p>
@@ -123,28 +134,15 @@
             />
           </label>
           <div class="temp-buttons-div">
-            <button
-              id="celcius-btn"
-              class="temp-btn"
-              type="button"
-              title="celcius"
-              aria-label="celcius"
-            >
+            <button id="celcius-btn" class="temp-btn" type="button">
               &#8451;
             </button>
             <span>&#47;</span>
-            <button
-              id="fahr-btn"
-              class="temp-btn"
-              type="button"
-              title="fahrenheit"
-              aria-label="celcius"
-            >
+            <button id="fahr-btn" class="temp-btn" type="button">
               &#8457;
             </button>
           </div>
         </div>
-
         <div class="saved-locations"></div>
       </div>
     </div>

@@ -3,7 +3,9 @@ import { format } from "date-fns";
 
 export default function displaySavedLocations() {
   const savedLocations = document.querySelector(".saved-locations");
+  const child = document.querySelector(".saved-loc-card");
   while (savedLocations.firstChild && savedLocations.lastChild) {
+    child.removeEventListener("click", displayWeatherFromSavedLoc);
     savedLocations.removeChild(savedLocations.firstChild);
   }
   const data = JSON.parse(localStorage.getItem("locations"));
@@ -18,9 +20,12 @@ export default function displaySavedLocations() {
         )
       );
     }
+    let dayTime = "";
     const convertedDate = convertTZ(new Date(), el.timezone);
+    convertedDate.getHours() >= 6 && convertedDate.getHours() < 18
+      ? (dayTime = "day")
+      : (dayTime = "night");
     const formattedTime = format(convertedDate, "hh:mma");
-
     const savedLocCard = document.createElement("div");
     savedLocCard.className = "saved-loc-card";
     const savedLocInnerDiv = document.createElement("div");
@@ -38,7 +43,7 @@ export default function displaySavedLocations() {
       ? (savedLocTemp.textContent = el.temp + data.defaultDegree)
       : (savedLocTemp.textContent =
           Math.floor(((el.temp - 32) * 5) / 9) + "\u00B0C");
-    savedLocCard.style.backgroundImage = `url('/images/backgrounds/${el.dayTime}-${el.condition}.png')`;
+    savedLocCard.style.backgroundImage = `url('/images/backgrounds/${dayTime}-${el.condition}.png')`;
     savedLocTime.innerText = formattedTime;
 
     savedLocCard.addEventListener("click", displayWeatherFromSavedLoc);

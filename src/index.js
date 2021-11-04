@@ -8,20 +8,23 @@ import setDegree from "./modules/setDegree";
 import getDegree from "./modules/getDegree";
 import storeLocations from "./modules/storeLocations";
 import refreshSavedLocations from "./modules/resfreshSavedLocations";
+import toggleFooterBody from "./modules/toggleFooterBody";
 
 const searchBtn = document.querySelector("#search-btn");
 const footer = document.querySelector(".footer");
 const input = document.querySelector("#search-input");
 const celcBtn = document.querySelector("#celcius-btn");
 const fahrBtn = document.querySelector("#fahr-btn");
+const body = document.querySelector("body");
 
 const toggleLoadding = () =>
-  document.querySelector(".spinner").classList.toggle("loading");
+  document.querySelector(".loader").classList.toggle("loading");
 
 initMap(input);
 
 const weather = async () => {
   toggleLoadding();
+
   refreshSavedLocations();
   let degree = getDegree();
   setDegree(degree);
@@ -38,15 +41,14 @@ const weather = async () => {
 };
 
 searchBtn.addEventListener("click", () => {
-  document.querySelector("body").classList.toggle("no-scroll");
-  footer.classList.toggle("footer-open");
+  toggleFooterBody();
   input.value = "";
 });
 
 celcBtn.addEventListener("click", async () => {
   if (celcBtn.classList.contains("active-btn")) return;
   toggleLoadding();
-  footer.classList.toggle("footer-open");
+  toggleFooterBody();
   setDegree("\u00B0C");
   let degree = getDegree();
   let coordinates = await getLatLong();
@@ -64,7 +66,7 @@ celcBtn.addEventListener("click", async () => {
 fahrBtn.addEventListener("click", async () => {
   if (fahrBtn.classList.contains("active-btn")) return;
   toggleLoadding();
-  footer.classList.toggle("footer-open");
+  toggleFooterBody();
   setDegree("\u00B0F");
   let degree = getDegree();
   let coordinates = await getLatLong();
